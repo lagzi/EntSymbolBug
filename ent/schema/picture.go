@@ -2,40 +2,46 @@ package schema
 
 import (
 	"entgo.io/ent"
-	edge "entgo.io/ent/schema/edge"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
+	"entgo.io/ent/schema/mixin"
 )
 
 const (
-	UserToPictureEdge = "user_to_picture_edge_very_long_name_longer_than_the_amount_that_postgres_can_really_handle"
-	//UserToPictureEdge = "short_edge"
-	pictureEdge = "picture"
+	userEdge       = "user"
+	componentEdge  = "component"
+	OtherField     = "other_important_thing"
+	timestampField = "timestamp"
 )
 
-// User holds the schema definition for the User entity.
 type Picture struct {
 	ent.Schema
 }
 
-// Fields of the User.
-func (Picture) Fields() []ent.Field {
-	return []ent.Field{
-		field.String("url"),
+func (Picture) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Edges(componentEdge, userEdge).Fields(OtherField).Unique(),
+		index.Fields(OtherField),
+		index.Fields(OtherField, timestampField),
 	}
 }
 
-//func (Picture) Indexes() []ent.Index {
-//	return []ent.Index{
-//		index.Edges(pictureEdge),
-//		index.Fields("key").
-//			Edges(pictureEdge).
-//			Unique(),
-//	}
-//}
+func (Picture) Fields() []ent.Field {
+	return []ent.Field{
+		field.String(OtherField),
+		field.Time(timestampField),
+	}
+}
 
-// Edges of the User.
+func (Picture) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		mixin.Time{},
+	}
+}
 func (Picture) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From(pictureEdge, User.Type).Ref(UserToPictureEdge),
+		edge.From(userEdge, User.Type).Ref(UserPicture).Unique(),
+		edge.From(componentEdge, Component.Type).Ref(ComponentPictures).Unique(),
 	}
 }
