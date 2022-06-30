@@ -24,9 +24,8 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
-	Component []ent.Hook
-	Picture   []ent.Hook
-	User      []ent.Hook
+	WorkerContainedInformation []ent.Hook
+	WorkerNetworkSettings      []ent.Hook
 }
 
 // Options applies the options on the config object.

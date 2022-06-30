@@ -8,95 +8,49 @@ import (
 )
 
 var (
-	// ComponentsColumns holds the columns for the "components" table.
-	ComponentsColumns = []*schema.Column{
+	// WorkerContainedInformationsColumns holds the columns for the "worker_contained_informations" table.
+	WorkerContainedInformationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "create_time", Type: field.TypeTime},
-		{Name: "update_time", Type: field.TypeTime},
-		{Name: "some_id", Type: field.TypeUint64, Unique: true},
 	}
-	// ComponentsTable holds the schema information for the "components" table.
-	ComponentsTable = &schema.Table{
-		Name:       "components",
-		Columns:    ComponentsColumns,
-		PrimaryKey: []*schema.Column{ComponentsColumns[0]},
-		Indexes: []*schema.Index{
-			{
-				Name:    "component_some_id",
-				Unique:  false,
-				Columns: []*schema.Column{ComponentsColumns[3]},
-			},
-		},
+	// WorkerContainedInformationsTable holds the schema information for the "worker_contained_informations" table.
+	WorkerContainedInformationsTable = &schema.Table{
+		Name:       "worker_contained_informations",
+		Columns:    WorkerContainedInformationsColumns,
+		PrimaryKey: []*schema.Column{WorkerContainedInformationsColumns[0]},
 	}
-	// PicturesColumns holds the columns for the "pictures" table.
-	PicturesColumns = []*schema.Column{
+	// WorkerNetworkSettingsColumns holds the columns for the "worker_network_settings" table.
+	WorkerNetworkSettingsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "create_time", Type: field.TypeTime},
-		{Name: "update_time", Type: field.TypeTime},
-		{Name: "other_important_thing", Type: field.TypeString},
-		{Name: "timestamp", Type: field.TypeTime},
-		{Name: "component_pictures", Type: field.TypeInt, Nullable: true},
-		{Name: "user_user_picture", Type: field.TypeInt, Nullable: true},
+		{Name: "worker_contained_information_network_settings", Type: field.TypeInt, Unique: true, Nullable: true},
 	}
-	// PicturesTable holds the schema information for the "pictures" table.
-	PicturesTable = &schema.Table{
-		Name:       "pictures",
-		Columns:    PicturesColumns,
-		PrimaryKey: []*schema.Column{PicturesColumns[0]},
+	// WorkerNetworkSettingsTable holds the schema information for the "worker_network_settings" table.
+	WorkerNetworkSettingsTable = &schema.Table{
+		Name:       "worker_network_settings",
+		Columns:    WorkerNetworkSettingsColumns,
+		PrimaryKey: []*schema.Column{WorkerNetworkSettingsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "pictures_components_pictures",
-				Columns:    []*schema.Column{PicturesColumns[5]},
-				RefColumns: []*schema.Column{ComponentsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "pictures_users_user_picture",
-				Columns:    []*schema.Column{PicturesColumns[6]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
+				Symbol:     "worker_network_settings_worker_contained_informations_network_settings",
+				Columns:    []*schema.Column{WorkerNetworkSettingsColumns[1]},
+				RefColumns: []*schema.Column{WorkerContainedInformationsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "picture_other_important_thing_component_pictures_user_user_picture",
-				Unique:  true,
-				Columns: []*schema.Column{PicturesColumns[3], PicturesColumns[5], PicturesColumns[6]},
-			},
-			{
-				Name:    "picture_other_important_thing",
+				Name:    "workernetworksettings_worker_contained_information_network_settings",
 				Unique:  false,
-				Columns: []*schema.Column{PicturesColumns[3]},
-			},
-			{
-				Name:    "picture_other_important_thing_timestamp",
-				Unique:  false,
-				Columns: []*schema.Column{PicturesColumns[3], PicturesColumns[4]},
+				Columns: []*schema.Column{WorkerNetworkSettingsColumns[1]},
 			},
 		},
-	}
-	// UsersColumns holds the columns for the "users" table.
-	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "create_time", Type: field.TypeTime},
-		{Name: "update_time", Type: field.TypeTime},
-		{Name: "timestamp", Type: field.TypeTime},
-	}
-	// UsersTable holds the schema information for the "users" table.
-	UsersTable = &schema.Table{
-		Name:       "users",
-		Columns:    UsersColumns,
-		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		ComponentsTable,
-		PicturesTable,
-		UsersTable,
+		WorkerContainedInformationsTable,
+		WorkerNetworkSettingsTable,
 	}
 )
 
 func init() {
-	PicturesTable.ForeignKeys[0].RefTable = ComponentsTable
-	PicturesTable.ForeignKeys[1].RefTable = UsersTable
+	WorkerNetworkSettingsTable.ForeignKeys[0].RefTable = WorkerContainedInformationsTable
 }

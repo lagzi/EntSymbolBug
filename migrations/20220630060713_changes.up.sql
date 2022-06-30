@@ -1,0 +1,2 @@
+-- create index "worker_network_settings_worker_contained_information_network_settings_key" to table: "worker_network_settings"
+CREATE UNIQUE INDEX "worker_network_settings_worker_contained_information_network_settings_key" ON "worker_network_settings" ("worker_contained_information_network_settings");

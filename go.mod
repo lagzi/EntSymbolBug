@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	ariga.io/atlas v0.4.3-0.20220618160942-1080fa97c763
-	entgo.io/ent v0.10.2-0.20220620053230-311d76067960
+	entgo.io/ent v0.10.2-0.20220629115610-f1662d9197e7
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/jinzhu/gorm v1.9.16

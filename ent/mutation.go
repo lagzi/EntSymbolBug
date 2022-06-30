@@ -7,12 +7,10 @@ import (
 	"errors"
 	"fmt"
 	"sync"
-	"time"
 
-	"github.com/lagzi/EntSymbolBug/ent/component"
-	"github.com/lagzi/EntSymbolBug/ent/picture"
 	"github.com/lagzi/EntSymbolBug/ent/predicate"
-	"github.com/lagzi/EntSymbolBug/ent/user"
+	"github.com/lagzi/EntSymbolBug/ent/workercontainedinformation"
+	"github.com/lagzi/EntSymbolBug/ent/workernetworksettings"
 
 	"entgo.io/ent"
 )
@@ -26,41 +24,35 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeComponent = "Component"
-	TypePicture   = "Picture"
-	TypeUser      = "User"
+	TypeWorkerContainedInformation = "WorkerContainedInformation"
+	TypeWorkerNetworkSettings      = "WorkerNetworkSettings"
 )
 
-// ComponentMutation represents an operation that mutates the Component nodes in the graph.
-type ComponentMutation struct {
+// WorkerContainedInformationMutation represents an operation that mutates the WorkerContainedInformation nodes in the graph.
+type WorkerContainedInformationMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *int
-	create_time     *time.Time
-	update_time     *time.Time
-	some_id         *uint64
-	addsome_id      *int64
-	clearedFields   map[string]struct{}
-	pictures        map[int]struct{}
-	removedpictures map[int]struct{}
-	clearedpictures bool
-	done            bool
-	oldValue        func(context.Context) (*Component, error)
-	predicates      []predicate.Component
+	op                      Op
+	typ                     string
+	id                      *int
+	clearedFields           map[string]struct{}
+	network_settings        *int
+	clearednetwork_settings bool
+	done                    bool
+	oldValue                func(context.Context) (*WorkerContainedInformation, error)
+	predicates              []predicate.WorkerContainedInformation
 }
 
-var _ ent.Mutation = (*ComponentMutation)(nil)
+var _ ent.Mutation = (*WorkerContainedInformationMutation)(nil)
 
-// componentOption allows management of the mutation configuration using functional options.
-type componentOption func(*ComponentMutation)
+// workercontainedinformationOption allows management of the mutation configuration using functional options.
+type workercontainedinformationOption func(*WorkerContainedInformationMutation)
 
-// newComponentMutation creates new mutation for the Component entity.
-func newComponentMutation(c config, op Op, opts ...componentOption) *ComponentMutation {
-	m := &ComponentMutation{
+// newWorkerContainedInformationMutation creates new mutation for the WorkerContainedInformation entity.
+func newWorkerContainedInformationMutation(c config, op Op, opts ...workercontainedinformationOption) *WorkerContainedInformationMutation {
+	m := &WorkerContainedInformationMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeComponent,
+		typ:           TypeWorkerContainedInformation,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -69,20 +61,20 @@ func newComponentMutation(c config, op Op, opts ...componentOption) *ComponentMu
 	return m
 }
 
-// withComponentID sets the ID field of the mutation.
-func withComponentID(id int) componentOption {
-	return func(m *ComponentMutation) {
+// withWorkerContainedInformationID sets the ID field of the mutation.
+func withWorkerContainedInformationID(id int) workercontainedinformationOption {
+	return func(m *WorkerContainedInformationMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *Component
+			value *WorkerContainedInformation
 		)
-		m.oldValue = func(ctx context.Context) (*Component, error) {
+		m.oldValue = func(ctx context.Context) (*WorkerContainedInformation, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().Component.Get(ctx, id)
+					value, err = m.Client().WorkerContainedInformation.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -91,10 +83,10 @@ func withComponentID(id int) componentOption {
 	}
 }
 
-// withComponent sets the old Component of the mutation.
-func withComponent(node *Component) componentOption {
-	return func(m *ComponentMutation) {
-		m.oldValue = func(context.Context) (*Component, error) {
+// withWorkerContainedInformation sets the old WorkerContainedInformation of the mutation.
+func withWorkerContainedInformation(node *WorkerContainedInformation) workercontainedinformationOption {
+	return func(m *WorkerContainedInformationMutation) {
+		m.oldValue = func(context.Context) (*WorkerContainedInformation, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -103,7 +95,7 @@ func withComponent(node *Component) componentOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m ComponentMutation) Client() *Client {
+func (m WorkerContainedInformationMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -111,7 +103,7 @@ func (m ComponentMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m ComponentMutation) Tx() (*Tx, error) {
+func (m WorkerContainedInformationMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -122,7 +114,7 @@ func (m ComponentMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ComponentMutation) ID() (id int, exists bool) {
+func (m *WorkerContainedInformationMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -133,7 +125,7 @@ func (m *ComponentMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *ComponentMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *WorkerContainedInformationMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -142,972 +134,157 @@ func (m *ComponentMutation) IDs(ctx context.Context) ([]int, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Component.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().WorkerContainedInformation.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
-// SetCreateTime sets the "create_time" field.
-func (m *ComponentMutation) SetCreateTime(t time.Time) {
-	m.create_time = &t
+// SetNetworkSettingsID sets the "network_settings" edge to the WorkerNetworkSettings entity by id.
+func (m *WorkerContainedInformationMutation) SetNetworkSettingsID(id int) {
+	m.network_settings = &id
 }
 
-// CreateTime returns the value of the "create_time" field in the mutation.
-func (m *ComponentMutation) CreateTime() (r time.Time, exists bool) {
-	v := m.create_time
-	if v == nil {
-		return
-	}
-	return *v, true
+// ClearNetworkSettings clears the "network_settings" edge to the WorkerNetworkSettings entity.
+func (m *WorkerContainedInformationMutation) ClearNetworkSettings() {
+	m.clearednetwork_settings = true
 }
 
-// OldCreateTime returns the old "create_time" field's value of the Component entity.
-// If the Component object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ComponentMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreateTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
-	}
-	return oldValue.CreateTime, nil
+// NetworkSettingsCleared reports if the "network_settings" edge to the WorkerNetworkSettings entity was cleared.
+func (m *WorkerContainedInformationMutation) NetworkSettingsCleared() bool {
+	return m.clearednetwork_settings
 }
 
-// ResetCreateTime resets all changes to the "create_time" field.
-func (m *ComponentMutation) ResetCreateTime() {
-	m.create_time = nil
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (m *ComponentMutation) SetUpdateTime(t time.Time) {
-	m.update_time = &t
-}
-
-// UpdateTime returns the value of the "update_time" field in the mutation.
-func (m *ComponentMutation) UpdateTime() (r time.Time, exists bool) {
-	v := m.update_time
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdateTime returns the old "update_time" field's value of the Component entity.
-// If the Component object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ComponentMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
-	}
-	return oldValue.UpdateTime, nil
-}
-
-// ResetUpdateTime resets all changes to the "update_time" field.
-func (m *ComponentMutation) ResetUpdateTime() {
-	m.update_time = nil
-}
-
-// SetSomeID sets the "some_id" field.
-func (m *ComponentMutation) SetSomeID(u uint64) {
-	m.some_id = &u
-	m.addsome_id = nil
-}
-
-// SomeID returns the value of the "some_id" field in the mutation.
-func (m *ComponentMutation) SomeID() (r uint64, exists bool) {
-	v := m.some_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldSomeID returns the old "some_id" field's value of the Component entity.
-// If the Component object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ComponentMutation) OldSomeID(ctx context.Context) (v uint64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldSomeID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldSomeID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldSomeID: %w", err)
-	}
-	return oldValue.SomeID, nil
-}
-
-// AddSomeID adds u to the "some_id" field.
-func (m *ComponentMutation) AddSomeID(u int64) {
-	if m.addsome_id != nil {
-		*m.addsome_id += u
-	} else {
-		m.addsome_id = &u
-	}
-}
-
-// AddedSomeID returns the value that was added to the "some_id" field in this mutation.
-func (m *ComponentMutation) AddedSomeID() (r int64, exists bool) {
-	v := m.addsome_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetSomeID resets all changes to the "some_id" field.
-func (m *ComponentMutation) ResetSomeID() {
-	m.some_id = nil
-	m.addsome_id = nil
-}
-
-// AddPictureIDs adds the "pictures" edge to the Picture entity by ids.
-func (m *ComponentMutation) AddPictureIDs(ids ...int) {
-	if m.pictures == nil {
-		m.pictures = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.pictures[ids[i]] = struct{}{}
-	}
-}
-
-// ClearPictures clears the "pictures" edge to the Picture entity.
-func (m *ComponentMutation) ClearPictures() {
-	m.clearedpictures = true
-}
-
-// PicturesCleared reports if the "pictures" edge to the Picture entity was cleared.
-func (m *ComponentMutation) PicturesCleared() bool {
-	return m.clearedpictures
-}
-
-// RemovePictureIDs removes the "pictures" edge to the Picture entity by IDs.
-func (m *ComponentMutation) RemovePictureIDs(ids ...int) {
-	if m.removedpictures == nil {
-		m.removedpictures = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.pictures, ids[i])
-		m.removedpictures[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedPictures returns the removed IDs of the "pictures" edge to the Picture entity.
-func (m *ComponentMutation) RemovedPicturesIDs() (ids []int) {
-	for id := range m.removedpictures {
-		ids = append(ids, id)
+// NetworkSettingsID returns the "network_settings" edge ID in the mutation.
+func (m *WorkerContainedInformationMutation) NetworkSettingsID() (id int, exists bool) {
+	if m.network_settings != nil {
+		return *m.network_settings, true
 	}
 	return
 }
 
-// PicturesIDs returns the "pictures" edge IDs in the mutation.
-func (m *ComponentMutation) PicturesIDs() (ids []int) {
-	for id := range m.pictures {
-		ids = append(ids, id)
+// NetworkSettingsIDs returns the "network_settings" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// NetworkSettingsID instead. It exists only for internal usage by the builders.
+func (m *WorkerContainedInformationMutation) NetworkSettingsIDs() (ids []int) {
+	if id := m.network_settings; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetPictures resets all changes to the "pictures" edge.
-func (m *ComponentMutation) ResetPictures() {
-	m.pictures = nil
-	m.clearedpictures = false
-	m.removedpictures = nil
+// ResetNetworkSettings resets all changes to the "network_settings" edge.
+func (m *WorkerContainedInformationMutation) ResetNetworkSettings() {
+	m.network_settings = nil
+	m.clearednetwork_settings = false
 }
 
-// Where appends a list predicates to the ComponentMutation builder.
-func (m *ComponentMutation) Where(ps ...predicate.Component) {
+// Where appends a list predicates to the WorkerContainedInformationMutation builder.
+func (m *WorkerContainedInformationMutation) Where(ps ...predicate.WorkerContainedInformation) {
 	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
-func (m *ComponentMutation) Op() Op {
+func (m *WorkerContainedInformationMutation) Op() Op {
 	return m.op
 }
 
-// Type returns the node type of this mutation (Component).
-func (m *ComponentMutation) Type() string {
+// Type returns the node type of this mutation (WorkerContainedInformation).
+func (m *WorkerContainedInformationMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *ComponentMutation) Fields() []string {
-	fields := make([]string, 0, 3)
-	if m.create_time != nil {
-		fields = append(fields, component.FieldCreateTime)
-	}
-	if m.update_time != nil {
-		fields = append(fields, component.FieldUpdateTime)
-	}
-	if m.some_id != nil {
-		fields = append(fields, component.FieldSomeID)
-	}
+func (m *WorkerContainedInformationMutation) Fields() []string {
+	fields := make([]string, 0, 0)
 	return fields
 }
 
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *ComponentMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case component.FieldCreateTime:
-		return m.CreateTime()
-	case component.FieldUpdateTime:
-		return m.UpdateTime()
-	case component.FieldSomeID:
-		return m.SomeID()
-	}
+func (m *WorkerContainedInformationMutation) Field(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *ComponentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case component.FieldCreateTime:
-		return m.OldCreateTime(ctx)
-	case component.FieldUpdateTime:
-		return m.OldUpdateTime(ctx)
-	case component.FieldSomeID:
-		return m.OldSomeID(ctx)
-	}
-	return nil, fmt.Errorf("unknown Component field %s", name)
+func (m *WorkerContainedInformationMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, fmt.Errorf("unknown WorkerContainedInformation field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *ComponentMutation) SetField(name string, value ent.Value) error {
+func (m *WorkerContainedInformationMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case component.FieldCreateTime:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreateTime(v)
-		return nil
-	case component.FieldUpdateTime:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdateTime(v)
-		return nil
-	case component.FieldSomeID:
-		v, ok := value.(uint64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetSomeID(v)
-		return nil
 	}
-	return fmt.Errorf("unknown Component field %s", name)
+	return fmt.Errorf("unknown WorkerContainedInformation field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *ComponentMutation) AddedFields() []string {
-	var fields []string
-	if m.addsome_id != nil {
-		fields = append(fields, component.FieldSomeID)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *ComponentMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case component.FieldSomeID:
-		return m.AddedSomeID()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *ComponentMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case component.FieldSomeID:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddSomeID(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Component numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *ComponentMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *ComponentMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *ComponentMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Component nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *ComponentMutation) ResetField(name string) error {
-	switch name {
-	case component.FieldCreateTime:
-		m.ResetCreateTime()
-		return nil
-	case component.FieldUpdateTime:
-		m.ResetUpdateTime()
-		return nil
-	case component.FieldSomeID:
-		m.ResetSomeID()
-		return nil
-	}
-	return fmt.Errorf("unknown Component field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *ComponentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.pictures != nil {
-		edges = append(edges, component.EdgePictures)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *ComponentMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case component.EdgePictures:
-		ids := make([]ent.Value, 0, len(m.pictures))
-		for id := range m.pictures {
-			ids = append(ids, id)
-		}
-		return ids
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *ComponentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.removedpictures != nil {
-		edges = append(edges, component.EdgePictures)
-	}
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *ComponentMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case component.EdgePictures:
-		ids := make([]ent.Value, 0, len(m.removedpictures))
-		for id := range m.removedpictures {
-			ids = append(ids, id)
-		}
-		return ids
-	}
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *ComponentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedpictures {
-		edges = append(edges, component.EdgePictures)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *ComponentMutation) EdgeCleared(name string) bool {
-	switch name {
-	case component.EdgePictures:
-		return m.clearedpictures
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *ComponentMutation) ClearEdge(name string) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown Component unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *ComponentMutation) ResetEdge(name string) error {
-	switch name {
-	case component.EdgePictures:
-		m.ResetPictures()
-		return nil
-	}
-	return fmt.Errorf("unknown Component edge %s", name)
-}
-
-// PictureMutation represents an operation that mutates the Picture nodes in the graph.
-type PictureMutation struct {
-	config
-	op                    Op
-	typ                   string
-	id                    *int
-	create_time           *time.Time
-	update_time           *time.Time
-	other_important_thing *string
-	timestamp             *time.Time
-	clearedFields         map[string]struct{}
-	user                  *int
-	cleareduser           bool
-	component             *int
-	clearedcomponent      bool
-	done                  bool
-	oldValue              func(context.Context) (*Picture, error)
-	predicates            []predicate.Picture
-}
-
-var _ ent.Mutation = (*PictureMutation)(nil)
-
-// pictureOption allows management of the mutation configuration using functional options.
-type pictureOption func(*PictureMutation)
-
-// newPictureMutation creates new mutation for the Picture entity.
-func newPictureMutation(c config, op Op, opts ...pictureOption) *PictureMutation {
-	m := &PictureMutation{
-		config:        c,
-		op:            op,
-		typ:           TypePicture,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withPictureID sets the ID field of the mutation.
-func withPictureID(id int) pictureOption {
-	return func(m *PictureMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *Picture
-		)
-		m.oldValue = func(ctx context.Context) (*Picture, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().Picture.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withPicture sets the old Picture of the mutation.
-func withPicture(node *Picture) pictureOption {
-	return func(m *PictureMutation) {
-		m.oldValue = func(context.Context) (*Picture, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m PictureMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m PictureMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *PictureMutation) ID() (id int, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *PictureMutation) IDs(ctx context.Context) ([]int, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []int{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Picture.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetCreateTime sets the "create_time" field.
-func (m *PictureMutation) SetCreateTime(t time.Time) {
-	m.create_time = &t
-}
-
-// CreateTime returns the value of the "create_time" field in the mutation.
-func (m *PictureMutation) CreateTime() (r time.Time, exists bool) {
-	v := m.create_time
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreateTime returns the old "create_time" field's value of the Picture entity.
-// If the Picture object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PictureMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreateTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
-	}
-	return oldValue.CreateTime, nil
-}
-
-// ResetCreateTime resets all changes to the "create_time" field.
-func (m *PictureMutation) ResetCreateTime() {
-	m.create_time = nil
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (m *PictureMutation) SetUpdateTime(t time.Time) {
-	m.update_time = &t
-}
-
-// UpdateTime returns the value of the "update_time" field in the mutation.
-func (m *PictureMutation) UpdateTime() (r time.Time, exists bool) {
-	v := m.update_time
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdateTime returns the old "update_time" field's value of the Picture entity.
-// If the Picture object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PictureMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
-	}
-	return oldValue.UpdateTime, nil
-}
-
-// ResetUpdateTime resets all changes to the "update_time" field.
-func (m *PictureMutation) ResetUpdateTime() {
-	m.update_time = nil
-}
-
-// SetOtherImportantThing sets the "other_important_thing" field.
-func (m *PictureMutation) SetOtherImportantThing(s string) {
-	m.other_important_thing = &s
-}
-
-// OtherImportantThing returns the value of the "other_important_thing" field in the mutation.
-func (m *PictureMutation) OtherImportantThing() (r string, exists bool) {
-	v := m.other_important_thing
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldOtherImportantThing returns the old "other_important_thing" field's value of the Picture entity.
-// If the Picture object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PictureMutation) OldOtherImportantThing(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldOtherImportantThing is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldOtherImportantThing requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldOtherImportantThing: %w", err)
-	}
-	return oldValue.OtherImportantThing, nil
-}
-
-// ResetOtherImportantThing resets all changes to the "other_important_thing" field.
-func (m *PictureMutation) ResetOtherImportantThing() {
-	m.other_important_thing = nil
-}
-
-// SetTimestamp sets the "timestamp" field.
-func (m *PictureMutation) SetTimestamp(t time.Time) {
-	m.timestamp = &t
-}
-
-// Timestamp returns the value of the "timestamp" field in the mutation.
-func (m *PictureMutation) Timestamp() (r time.Time, exists bool) {
-	v := m.timestamp
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTimestamp returns the old "timestamp" field's value of the Picture entity.
-// If the Picture object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PictureMutation) OldTimestamp(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTimestamp is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTimestamp requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTimestamp: %w", err)
-	}
-	return oldValue.Timestamp, nil
-}
-
-// ResetTimestamp resets all changes to the "timestamp" field.
-func (m *PictureMutation) ResetTimestamp() {
-	m.timestamp = nil
-}
-
-// SetUserID sets the "user" edge to the User entity by id.
-func (m *PictureMutation) SetUserID(id int) {
-	m.user = &id
-}
-
-// ClearUser clears the "user" edge to the User entity.
-func (m *PictureMutation) ClearUser() {
-	m.cleareduser = true
-}
-
-// UserCleared reports if the "user" edge to the User entity was cleared.
-func (m *PictureMutation) UserCleared() bool {
-	return m.cleareduser
-}
-
-// UserID returns the "user" edge ID in the mutation.
-func (m *PictureMutation) UserID() (id int, exists bool) {
-	if m.user != nil {
-		return *m.user, true
-	}
-	return
-}
-
-// UserIDs returns the "user" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// UserID instead. It exists only for internal usage by the builders.
-func (m *PictureMutation) UserIDs() (ids []int) {
-	if id := m.user; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetUser resets all changes to the "user" edge.
-func (m *PictureMutation) ResetUser() {
-	m.user = nil
-	m.cleareduser = false
-}
-
-// SetComponentID sets the "component" edge to the Component entity by id.
-func (m *PictureMutation) SetComponentID(id int) {
-	m.component = &id
-}
-
-// ClearComponent clears the "component" edge to the Component entity.
-func (m *PictureMutation) ClearComponent() {
-	m.clearedcomponent = true
-}
-
-// ComponentCleared reports if the "component" edge to the Component entity was cleared.
-func (m *PictureMutation) ComponentCleared() bool {
-	return m.clearedcomponent
-}
-
-// ComponentID returns the "component" edge ID in the mutation.
-func (m *PictureMutation) ComponentID() (id int, exists bool) {
-	if m.component != nil {
-		return *m.component, true
-	}
-	return
-}
-
-// ComponentIDs returns the "component" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ComponentID instead. It exists only for internal usage by the builders.
-func (m *PictureMutation) ComponentIDs() (ids []int) {
-	if id := m.component; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetComponent resets all changes to the "component" edge.
-func (m *PictureMutation) ResetComponent() {
-	m.component = nil
-	m.clearedcomponent = false
-}
-
-// Where appends a list predicates to the PictureMutation builder.
-func (m *PictureMutation) Where(ps ...predicate.Picture) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// Op returns the operation name.
-func (m *PictureMutation) Op() Op {
-	return m.op
-}
-
-// Type returns the node type of this mutation (Picture).
-func (m *PictureMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *PictureMutation) Fields() []string {
-	fields := make([]string, 0, 4)
-	if m.create_time != nil {
-		fields = append(fields, picture.FieldCreateTime)
-	}
-	if m.update_time != nil {
-		fields = append(fields, picture.FieldUpdateTime)
-	}
-	if m.other_important_thing != nil {
-		fields = append(fields, picture.FieldOtherImportantThing)
-	}
-	if m.timestamp != nil {
-		fields = append(fields, picture.FieldTimestamp)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *PictureMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case picture.FieldCreateTime:
-		return m.CreateTime()
-	case picture.FieldUpdateTime:
-		return m.UpdateTime()
-	case picture.FieldOtherImportantThing:
-		return m.OtherImportantThing()
-	case picture.FieldTimestamp:
-		return m.Timestamp()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *PictureMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case picture.FieldCreateTime:
-		return m.OldCreateTime(ctx)
-	case picture.FieldUpdateTime:
-		return m.OldUpdateTime(ctx)
-	case picture.FieldOtherImportantThing:
-		return m.OldOtherImportantThing(ctx)
-	case picture.FieldTimestamp:
-		return m.OldTimestamp(ctx)
-	}
-	return nil, fmt.Errorf("unknown Picture field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *PictureMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case picture.FieldCreateTime:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreateTime(v)
-		return nil
-	case picture.FieldUpdateTime:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdateTime(v)
-		return nil
-	case picture.FieldOtherImportantThing:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetOtherImportantThing(v)
-		return nil
-	case picture.FieldTimestamp:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTimestamp(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Picture field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *PictureMutation) AddedFields() []string {
+func (m *WorkerContainedInformationMutation) AddedFields() []string {
 	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *PictureMutation) AddedField(name string) (ent.Value, bool) {
+func (m *WorkerContainedInformationMutation) AddedField(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *PictureMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown Picture numeric field %s", name)
+func (m *WorkerContainedInformationMutation) AddField(name string, value ent.Value) error {
+	return fmt.Errorf("unknown WorkerContainedInformation numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *PictureMutation) ClearedFields() []string {
+func (m *WorkerContainedInformationMutation) ClearedFields() []string {
 	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *PictureMutation) FieldCleared(name string) bool {
+func (m *WorkerContainedInformationMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *PictureMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown Picture nullable field %s", name)
+func (m *WorkerContainedInformationMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown WorkerContainedInformation nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *PictureMutation) ResetField(name string) error {
-	switch name {
-	case picture.FieldCreateTime:
-		m.ResetCreateTime()
-		return nil
-	case picture.FieldUpdateTime:
-		m.ResetUpdateTime()
-		return nil
-	case picture.FieldOtherImportantThing:
-		m.ResetOtherImportantThing()
-		return nil
-	case picture.FieldTimestamp:
-		m.ResetTimestamp()
-		return nil
-	}
-	return fmt.Errorf("unknown Picture field %s", name)
+func (m *WorkerContainedInformationMutation) ResetField(name string) error {
+	return fmt.Errorf("unknown WorkerContainedInformation field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *PictureMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.user != nil {
-		edges = append(edges, picture.EdgeUser)
-	}
-	if m.component != nil {
-		edges = append(edges, picture.EdgeComponent)
+func (m *WorkerContainedInformationMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.network_settings != nil {
+		edges = append(edges, workercontainedinformation.EdgeNetworkSettings)
 	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *PictureMutation) AddedIDs(name string) []ent.Value {
+func (m *WorkerContainedInformationMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case picture.EdgeUser:
-		if id := m.user; id != nil {
-			return []ent.Value{*id}
-		}
-	case picture.EdgeComponent:
-		if id := m.component; id != nil {
+	case workercontainedinformation.EdgeNetworkSettings:
+		if id := m.network_settings; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -1115,100 +292,85 @@ func (m *PictureMutation) AddedIDs(name string) []ent.Value {
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *PictureMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+func (m *WorkerContainedInformationMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *PictureMutation) RemovedIDs(name string) []ent.Value {
+func (m *WorkerContainedInformationMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *PictureMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.cleareduser {
-		edges = append(edges, picture.EdgeUser)
-	}
-	if m.clearedcomponent {
-		edges = append(edges, picture.EdgeComponent)
+func (m *WorkerContainedInformationMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearednetwork_settings {
+		edges = append(edges, workercontainedinformation.EdgeNetworkSettings)
 	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *PictureMutation) EdgeCleared(name string) bool {
+func (m *WorkerContainedInformationMutation) EdgeCleared(name string) bool {
 	switch name {
-	case picture.EdgeUser:
-		return m.cleareduser
-	case picture.EdgeComponent:
-		return m.clearedcomponent
+	case workercontainedinformation.EdgeNetworkSettings:
+		return m.clearednetwork_settings
 	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *PictureMutation) ClearEdge(name string) error {
+func (m *WorkerContainedInformationMutation) ClearEdge(name string) error {
 	switch name {
-	case picture.EdgeUser:
-		m.ClearUser()
-		return nil
-	case picture.EdgeComponent:
-		m.ClearComponent()
+	case workercontainedinformation.EdgeNetworkSettings:
+		m.ClearNetworkSettings()
 		return nil
 	}
-	return fmt.Errorf("unknown Picture unique edge %s", name)
+	return fmt.Errorf("unknown WorkerContainedInformation unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *PictureMutation) ResetEdge(name string) error {
+func (m *WorkerContainedInformationMutation) ResetEdge(name string) error {
 	switch name {
-	case picture.EdgeUser:
-		m.ResetUser()
-		return nil
-	case picture.EdgeComponent:
-		m.ResetComponent()
+	case workercontainedinformation.EdgeNetworkSettings:
+		m.ResetNetworkSettings()
 		return nil
 	}
-	return fmt.Errorf("unknown Picture edge %s", name)
+	return fmt.Errorf("unknown WorkerContainedInformation edge %s", name)
 }
 
-// UserMutation represents an operation that mutates the User nodes in the graph.
-type UserMutation struct {
+// WorkerNetworkSettingsMutation represents an operation that mutates the WorkerNetworkSettings nodes in the graph.
+type WorkerNetworkSettingsMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *int
-	create_time         *time.Time
-	update_time         *time.Time
-	timestamp           *time.Time
-	clearedFields       map[string]struct{}
-	user_picture        map[int]struct{}
-	removeduser_picture map[int]struct{}
-	cleareduser_picture bool
-	done                bool
-	oldValue            func(context.Context) (*User, error)
-	predicates          []predicate.User
+	op                                  Op
+	typ                                 string
+	id                                  *int
+	clearedFields                       map[string]struct{}
+	worker_contained_information        *int
+	clearedworker_contained_information bool
+	done                                bool
+	oldValue                            func(context.Context) (*WorkerNetworkSettings, error)
+	predicates                          []predicate.WorkerNetworkSettings
 }
 
-var _ ent.Mutation = (*UserMutation)(nil)
+var _ ent.Mutation = (*WorkerNetworkSettingsMutation)(nil)
 
-// userOption allows management of the mutation configuration using functional options.
-type userOption func(*UserMutation)
+// workernetworksettingsOption allows management of the mutation configuration using functional options.
+type workernetworksettingsOption func(*WorkerNetworkSettingsMutation)
 
-// newUserMutation creates new mutation for the User entity.
-func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
-	m := &UserMutation{
+// newWorkerNetworkSettingsMutation creates new mutation for the WorkerNetworkSettings entity.
+func newWorkerNetworkSettingsMutation(c config, op Op, opts ...workernetworksettingsOption) *WorkerNetworkSettingsMutation {
+	m := &WorkerNetworkSettingsMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeUser,
+		typ:           TypeWorkerNetworkSettings,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -1217,20 +379,20 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 	return m
 }
 
-// withUserID sets the ID field of the mutation.
-func withUserID(id int) userOption {
-	return func(m *UserMutation) {
+// withWorkerNetworkSettingsID sets the ID field of the mutation.
+func withWorkerNetworkSettingsID(id int) workernetworksettingsOption {
+	return func(m *WorkerNetworkSettingsMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *User
+			value *WorkerNetworkSettings
 		)
-		m.oldValue = func(ctx context.Context) (*User, error) {
+		m.oldValue = func(ctx context.Context) (*WorkerNetworkSettings, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().User.Get(ctx, id)
+					value, err = m.Client().WorkerNetworkSettings.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -1239,10 +401,10 @@ func withUserID(id int) userOption {
 	}
 }
 
-// withUser sets the old User of the mutation.
-func withUser(node *User) userOption {
-	return func(m *UserMutation) {
-		m.oldValue = func(context.Context) (*User, error) {
+// withWorkerNetworkSettings sets the old WorkerNetworkSettings of the mutation.
+func withWorkerNetworkSettings(node *WorkerNetworkSettings) workernetworksettingsOption {
+	return func(m *WorkerNetworkSettingsMutation) {
+		m.oldValue = func(context.Context) (*WorkerNetworkSettings, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -1251,7 +413,7 @@ func withUser(node *User) userOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m UserMutation) Client() *Client {
+func (m WorkerNetworkSettingsMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -1259,7 +421,7 @@ func (m UserMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m UserMutation) Tx() (*Tx, error) {
+func (m WorkerNetworkSettingsMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -1270,7 +432,7 @@ func (m UserMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id int, exists bool) {
+func (m *WorkerNetworkSettingsMutation) ID() (id int, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1281,7 +443,7 @@ func (m *UserMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *WorkerNetworkSettingsMutation) IDs(ctx context.Context) ([]int, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -1290,404 +452,214 @@ func (m *UserMutation) IDs(ctx context.Context) ([]int, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().User.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().WorkerNetworkSettings.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
-// SetCreateTime sets the "create_time" field.
-func (m *UserMutation) SetCreateTime(t time.Time) {
-	m.create_time = &t
+// SetWorkerContainedInformationID sets the "worker_contained_information" edge to the WorkerContainedInformation entity by id.
+func (m *WorkerNetworkSettingsMutation) SetWorkerContainedInformationID(id int) {
+	m.worker_contained_information = &id
 }
 
-// CreateTime returns the value of the "create_time" field in the mutation.
-func (m *UserMutation) CreateTime() (r time.Time, exists bool) {
-	v := m.create_time
-	if v == nil {
-		return
-	}
-	return *v, true
+// ClearWorkerContainedInformation clears the "worker_contained_information" edge to the WorkerContainedInformation entity.
+func (m *WorkerNetworkSettingsMutation) ClearWorkerContainedInformation() {
+	m.clearedworker_contained_information = true
 }
 
-// OldCreateTime returns the old "create_time" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldCreateTime(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreateTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreateTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreateTime: %w", err)
-	}
-	return oldValue.CreateTime, nil
+// WorkerContainedInformationCleared reports if the "worker_contained_information" edge to the WorkerContainedInformation entity was cleared.
+func (m *WorkerNetworkSettingsMutation) WorkerContainedInformationCleared() bool {
+	return m.clearedworker_contained_information
 }
 
-// ResetCreateTime resets all changes to the "create_time" field.
-func (m *UserMutation) ResetCreateTime() {
-	m.create_time = nil
-}
-
-// SetUpdateTime sets the "update_time" field.
-func (m *UserMutation) SetUpdateTime(t time.Time) {
-	m.update_time = &t
-}
-
-// UpdateTime returns the value of the "update_time" field in the mutation.
-func (m *UserMutation) UpdateTime() (r time.Time, exists bool) {
-	v := m.update_time
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdateTime returns the old "update_time" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldUpdateTime(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUpdateTime is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUpdateTime requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdateTime: %w", err)
-	}
-	return oldValue.UpdateTime, nil
-}
-
-// ResetUpdateTime resets all changes to the "update_time" field.
-func (m *UserMutation) ResetUpdateTime() {
-	m.update_time = nil
-}
-
-// SetTimestamp sets the "timestamp" field.
-func (m *UserMutation) SetTimestamp(t time.Time) {
-	m.timestamp = &t
-}
-
-// Timestamp returns the value of the "timestamp" field in the mutation.
-func (m *UserMutation) Timestamp() (r time.Time, exists bool) {
-	v := m.timestamp
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTimestamp returns the old "timestamp" field's value of the User entity.
-// If the User object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UserMutation) OldTimestamp(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTimestamp is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTimestamp requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTimestamp: %w", err)
-	}
-	return oldValue.Timestamp, nil
-}
-
-// ResetTimestamp resets all changes to the "timestamp" field.
-func (m *UserMutation) ResetTimestamp() {
-	m.timestamp = nil
-}
-
-// AddUserPictureIDs adds the "user_picture" edge to the Picture entity by ids.
-func (m *UserMutation) AddUserPictureIDs(ids ...int) {
-	if m.user_picture == nil {
-		m.user_picture = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.user_picture[ids[i]] = struct{}{}
-	}
-}
-
-// ClearUserPicture clears the "user_picture" edge to the Picture entity.
-func (m *UserMutation) ClearUserPicture() {
-	m.cleareduser_picture = true
-}
-
-// UserPictureCleared reports if the "user_picture" edge to the Picture entity was cleared.
-func (m *UserMutation) UserPictureCleared() bool {
-	return m.cleareduser_picture
-}
-
-// RemoveUserPictureIDs removes the "user_picture" edge to the Picture entity by IDs.
-func (m *UserMutation) RemoveUserPictureIDs(ids ...int) {
-	if m.removeduser_picture == nil {
-		m.removeduser_picture = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.user_picture, ids[i])
-		m.removeduser_picture[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedUserPicture returns the removed IDs of the "user_picture" edge to the Picture entity.
-func (m *UserMutation) RemovedUserPictureIDs() (ids []int) {
-	for id := range m.removeduser_picture {
-		ids = append(ids, id)
+// WorkerContainedInformationID returns the "worker_contained_information" edge ID in the mutation.
+func (m *WorkerNetworkSettingsMutation) WorkerContainedInformationID() (id int, exists bool) {
+	if m.worker_contained_information != nil {
+		return *m.worker_contained_information, true
 	}
 	return
 }
 
-// UserPictureIDs returns the "user_picture" edge IDs in the mutation.
-func (m *UserMutation) UserPictureIDs() (ids []int) {
-	for id := range m.user_picture {
-		ids = append(ids, id)
+// WorkerContainedInformationIDs returns the "worker_contained_information" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WorkerContainedInformationID instead. It exists only for internal usage by the builders.
+func (m *WorkerNetworkSettingsMutation) WorkerContainedInformationIDs() (ids []int) {
+	if id := m.worker_contained_information; id != nil {
+		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetUserPicture resets all changes to the "user_picture" edge.
-func (m *UserMutation) ResetUserPicture() {
-	m.user_picture = nil
-	m.cleareduser_picture = false
-	m.removeduser_picture = nil
+// ResetWorkerContainedInformation resets all changes to the "worker_contained_information" edge.
+func (m *WorkerNetworkSettingsMutation) ResetWorkerContainedInformation() {
+	m.worker_contained_information = nil
+	m.clearedworker_contained_information = false
 }
 
-// Where appends a list predicates to the UserMutation builder.
-func (m *UserMutation) Where(ps ...predicate.User) {
+// Where appends a list predicates to the WorkerNetworkSettingsMutation builder.
+func (m *WorkerNetworkSettingsMutation) Where(ps ...predicate.WorkerNetworkSettings) {
 	m.predicates = append(m.predicates, ps...)
 }
 
 // Op returns the operation name.
-func (m *UserMutation) Op() Op {
+func (m *WorkerNetworkSettingsMutation) Op() Op {
 	return m.op
 }
 
-// Type returns the node type of this mutation (User).
-func (m *UserMutation) Type() string {
+// Type returns the node type of this mutation (WorkerNetworkSettings).
+func (m *WorkerNetworkSettingsMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 3)
-	if m.create_time != nil {
-		fields = append(fields, user.FieldCreateTime)
-	}
-	if m.update_time != nil {
-		fields = append(fields, user.FieldUpdateTime)
-	}
-	if m.timestamp != nil {
-		fields = append(fields, user.FieldTimestamp)
-	}
+func (m *WorkerNetworkSettingsMutation) Fields() []string {
+	fields := make([]string, 0, 0)
 	return fields
 }
 
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *UserMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case user.FieldCreateTime:
-		return m.CreateTime()
-	case user.FieldUpdateTime:
-		return m.UpdateTime()
-	case user.FieldTimestamp:
-		return m.Timestamp()
-	}
+func (m *WorkerNetworkSettingsMutation) Field(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case user.FieldCreateTime:
-		return m.OldCreateTime(ctx)
-	case user.FieldUpdateTime:
-		return m.OldUpdateTime(ctx)
-	case user.FieldTimestamp:
-		return m.OldTimestamp(ctx)
-	}
-	return nil, fmt.Errorf("unknown User field %s", name)
+func (m *WorkerNetworkSettingsMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, fmt.Errorf("unknown WorkerNetworkSettings field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *UserMutation) SetField(name string, value ent.Value) error {
+func (m *WorkerNetworkSettingsMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case user.FieldCreateTime:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreateTime(v)
-		return nil
-	case user.FieldUpdateTime:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdateTime(v)
-		return nil
-	case user.FieldTimestamp:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTimestamp(v)
-		return nil
 	}
-	return fmt.Errorf("unknown User field %s", name)
+	return fmt.Errorf("unknown WorkerNetworkSettings field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *UserMutation) AddedFields() []string {
+func (m *WorkerNetworkSettingsMutation) AddedFields() []string {
 	return nil
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
+func (m *WorkerNetworkSettingsMutation) AddedField(name string) (ent.Value, bool) {
 	return nil, false
 }
 
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *UserMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown User numeric field %s", name)
+func (m *WorkerNetworkSettingsMutation) AddField(name string, value ent.Value) error {
+	return fmt.Errorf("unknown WorkerNetworkSettings numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *UserMutation) ClearedFields() []string {
+func (m *WorkerNetworkSettingsMutation) ClearedFields() []string {
 	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *UserMutation) FieldCleared(name string) bool {
+func (m *WorkerNetworkSettingsMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *UserMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown User nullable field %s", name)
+func (m *WorkerNetworkSettingsMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown WorkerNetworkSettings nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *UserMutation) ResetField(name string) error {
-	switch name {
-	case user.FieldCreateTime:
-		m.ResetCreateTime()
-		return nil
-	case user.FieldUpdateTime:
-		m.ResetUpdateTime()
-		return nil
-	case user.FieldTimestamp:
-		m.ResetTimestamp()
-		return nil
-	}
-	return fmt.Errorf("unknown User field %s", name)
+func (m *WorkerNetworkSettingsMutation) ResetField(name string) error {
+	return fmt.Errorf("unknown WorkerNetworkSettings field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *UserMutation) AddedEdges() []string {
+func (m *WorkerNetworkSettingsMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.user_picture != nil {
-		edges = append(edges, user.EdgeUserPicture)
+	if m.worker_contained_information != nil {
+		edges = append(edges, workernetworksettings.EdgeWorkerContainedInformation)
 	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *UserMutation) AddedIDs(name string) []ent.Value {
+func (m *WorkerNetworkSettingsMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeUserPicture:
-		ids := make([]ent.Value, 0, len(m.user_picture))
-		for id := range m.user_picture {
-			ids = append(ids, id)
+	case workernetworksettings.EdgeWorkerContainedInformation:
+		if id := m.worker_contained_information; id != nil {
+			return []ent.Value{*id}
 		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *UserMutation) RemovedEdges() []string {
+func (m *WorkerNetworkSettingsMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removeduser_picture != nil {
-		edges = append(edges, user.EdgeUserPicture)
-	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *UserMutation) RemovedIDs(name string) []ent.Value {
+func (m *WorkerNetworkSettingsMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case user.EdgeUserPicture:
-		ids := make([]ent.Value, 0, len(m.removeduser_picture))
-		for id := range m.removeduser_picture {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *UserMutation) ClearedEdges() []string {
+func (m *WorkerNetworkSettingsMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.cleareduser_picture {
-		edges = append(edges, user.EdgeUserPicture)
+	if m.clearedworker_contained_information {
+		edges = append(edges, workernetworksettings.EdgeWorkerContainedInformation)
 	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *UserMutation) EdgeCleared(name string) bool {
+func (m *WorkerNetworkSettingsMutation) EdgeCleared(name string) bool {
 	switch name {
-	case user.EdgeUserPicture:
-		return m.cleareduser_picture
+	case workernetworksettings.EdgeWorkerContainedInformation:
+		return m.clearedworker_contained_information
 	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *UserMutation) ClearEdge(name string) error {
+func (m *WorkerNetworkSettingsMutation) ClearEdge(name string) error {
 	switch name {
+	case workernetworksettings.EdgeWorkerContainedInformation:
+		m.ClearWorkerContainedInformation()
+		return nil
 	}
-	return fmt.Errorf("unknown User unique edge %s", name)
+	return fmt.Errorf("unknown WorkerNetworkSettings unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *UserMutation) ResetEdge(name string) error {
+func (m *WorkerNetworkSettingsMutation) ResetEdge(name string) error {
 	switch name {
-	case user.EdgeUserPicture:
-		m.ResetUserPicture()
+	case workernetworksettings.EdgeWorkerContainedInformation:
+		m.ResetWorkerContainedInformation()
 		return nil
 	}
-	return fmt.Errorf("unknown User edge %s", name)
+	return fmt.Errorf("unknown WorkerNetworkSettings edge %s", name)
 }

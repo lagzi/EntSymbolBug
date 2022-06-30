@@ -9,9 +9,8 @@ import (
 
 	"github.com/lagzi/EntSymbolBug/ent/migrate"
 
-	"github.com/lagzi/EntSymbolBug/ent/component"
-	"github.com/lagzi/EntSymbolBug/ent/picture"
-	"github.com/lagzi/EntSymbolBug/ent/user"
+	"github.com/lagzi/EntSymbolBug/ent/workercontainedinformation"
+	"github.com/lagzi/EntSymbolBug/ent/workernetworksettings"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -23,12 +22,10 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Component is the client for interacting with the Component builders.
-	Component *ComponentClient
-	// Picture is the client for interacting with the Picture builders.
-	Picture *PictureClient
-	// User is the client for interacting with the User builders.
-	User *UserClient
+	// WorkerContainedInformation is the client for interacting with the WorkerContainedInformation builders.
+	WorkerContainedInformation *WorkerContainedInformationClient
+	// WorkerNetworkSettings is the client for interacting with the WorkerNetworkSettings builders.
+	WorkerNetworkSettings *WorkerNetworkSettingsClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -42,9 +39,8 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Component = NewComponentClient(c.config)
-	c.Picture = NewPictureClient(c.config)
-	c.User = NewUserClient(c.config)
+	c.WorkerContainedInformation = NewWorkerContainedInformationClient(c.config)
+	c.WorkerNetworkSettings = NewWorkerNetworkSettingsClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -76,11 +72,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:       ctx,
-		config:    cfg,
-		Component: NewComponentClient(cfg),
-		Picture:   NewPictureClient(cfg),
-		User:      NewUserClient(cfg),
+		ctx:                        ctx,
+		config:                     cfg,
+		WorkerContainedInformation: NewWorkerContainedInformationClient(cfg),
+		WorkerNetworkSettings:      NewWorkerNetworkSettingsClient(cfg),
 	}, nil
 }
 
@@ -98,18 +93,17 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:       ctx,
-		config:    cfg,
-		Component: NewComponentClient(cfg),
-		Picture:   NewPictureClient(cfg),
-		User:      NewUserClient(cfg),
+		ctx:                        ctx,
+		config:                     cfg,
+		WorkerContainedInformation: NewWorkerContainedInformationClient(cfg),
+		WorkerNetworkSettings:      NewWorkerNetworkSettingsClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Component.
+//		WorkerContainedInformation.
 //		Query().
 //		Count(ctx)
 //
@@ -132,89 +126,88 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Component.Use(hooks...)
-	c.Picture.Use(hooks...)
-	c.User.Use(hooks...)
+	c.WorkerContainedInformation.Use(hooks...)
+	c.WorkerNetworkSettings.Use(hooks...)
 }
 
-// ComponentClient is a client for the Component schema.
-type ComponentClient struct {
+// WorkerContainedInformationClient is a client for the WorkerContainedInformation schema.
+type WorkerContainedInformationClient struct {
 	config
 }
 
-// NewComponentClient returns a client for the Component from the given config.
-func NewComponentClient(c config) *ComponentClient {
-	return &ComponentClient{config: c}
+// NewWorkerContainedInformationClient returns a client for the WorkerContainedInformation from the given config.
+func NewWorkerContainedInformationClient(c config) *WorkerContainedInformationClient {
+	return &WorkerContainedInformationClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `component.Hooks(f(g(h())))`.
-func (c *ComponentClient) Use(hooks ...Hook) {
-	c.hooks.Component = append(c.hooks.Component, hooks...)
+// A call to `Use(f, g, h)` equals to `workercontainedinformation.Hooks(f(g(h())))`.
+func (c *WorkerContainedInformationClient) Use(hooks ...Hook) {
+	c.hooks.WorkerContainedInformation = append(c.hooks.WorkerContainedInformation, hooks...)
 }
 
-// Create returns a builder for creating a Component entity.
-func (c *ComponentClient) Create() *ComponentCreate {
-	mutation := newComponentMutation(c.config, OpCreate)
-	return &ComponentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a WorkerContainedInformation entity.
+func (c *WorkerContainedInformationClient) Create() *WorkerContainedInformationCreate {
+	mutation := newWorkerContainedInformationMutation(c.config, OpCreate)
+	return &WorkerContainedInformationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Component entities.
-func (c *ComponentClient) CreateBulk(builders ...*ComponentCreate) *ComponentCreateBulk {
-	return &ComponentCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of WorkerContainedInformation entities.
+func (c *WorkerContainedInformationClient) CreateBulk(builders ...*WorkerContainedInformationCreate) *WorkerContainedInformationCreateBulk {
+	return &WorkerContainedInformationCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Component.
-func (c *ComponentClient) Update() *ComponentUpdate {
-	mutation := newComponentMutation(c.config, OpUpdate)
-	return &ComponentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for WorkerContainedInformation.
+func (c *WorkerContainedInformationClient) Update() *WorkerContainedInformationUpdate {
+	mutation := newWorkerContainedInformationMutation(c.config, OpUpdate)
+	return &WorkerContainedInformationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ComponentClient) UpdateOne(co *Component) *ComponentUpdateOne {
-	mutation := newComponentMutation(c.config, OpUpdateOne, withComponent(co))
-	return &ComponentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *WorkerContainedInformationClient) UpdateOne(wci *WorkerContainedInformation) *WorkerContainedInformationUpdateOne {
+	mutation := newWorkerContainedInformationMutation(c.config, OpUpdateOne, withWorkerContainedInformation(wci))
+	return &WorkerContainedInformationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ComponentClient) UpdateOneID(id int) *ComponentUpdateOne {
-	mutation := newComponentMutation(c.config, OpUpdateOne, withComponentID(id))
-	return &ComponentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *WorkerContainedInformationClient) UpdateOneID(id int) *WorkerContainedInformationUpdateOne {
+	mutation := newWorkerContainedInformationMutation(c.config, OpUpdateOne, withWorkerContainedInformationID(id))
+	return &WorkerContainedInformationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Component.
-func (c *ComponentClient) Delete() *ComponentDelete {
-	mutation := newComponentMutation(c.config, OpDelete)
-	return &ComponentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for WorkerContainedInformation.
+func (c *WorkerContainedInformationClient) Delete() *WorkerContainedInformationDelete {
+	mutation := newWorkerContainedInformationMutation(c.config, OpDelete)
+	return &WorkerContainedInformationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *ComponentClient) DeleteOne(co *Component) *ComponentDeleteOne {
-	return c.DeleteOneID(co.ID)
+func (c *WorkerContainedInformationClient) DeleteOne(wci *WorkerContainedInformation) *WorkerContainedInformationDeleteOne {
+	return c.DeleteOneID(wci.ID)
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *ComponentClient) DeleteOneID(id int) *ComponentDeleteOne {
-	builder := c.Delete().Where(component.ID(id))
+func (c *WorkerContainedInformationClient) DeleteOneID(id int) *WorkerContainedInformationDeleteOne {
+	builder := c.Delete().Where(workercontainedinformation.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &ComponentDeleteOne{builder}
+	return &WorkerContainedInformationDeleteOne{builder}
 }
 
-// Query returns a query builder for Component.
-func (c *ComponentClient) Query() *ComponentQuery {
-	return &ComponentQuery{
+// Query returns a query builder for WorkerContainedInformation.
+func (c *WorkerContainedInformationClient) Query() *WorkerContainedInformationQuery {
+	return &WorkerContainedInformationQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a Component entity by its id.
-func (c *ComponentClient) Get(ctx context.Context, id int) (*Component, error) {
-	return c.Query().Where(component.ID(id)).Only(ctx)
+// Get returns a WorkerContainedInformation entity by its id.
+func (c *WorkerContainedInformationClient) Get(ctx context.Context, id int) (*WorkerContainedInformation, error) {
+	return c.Query().Where(workercontainedinformation.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ComponentClient) GetX(ctx context.Context, id int) *Component {
+func (c *WorkerContainedInformationClient) GetX(ctx context.Context, id int) *WorkerContainedInformation {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -222,105 +215,105 @@ func (c *ComponentClient) GetX(ctx context.Context, id int) *Component {
 	return obj
 }
 
-// QueryPictures queries the pictures edge of a Component.
-func (c *ComponentClient) QueryPictures(co *Component) *PictureQuery {
-	query := &PictureQuery{config: c.config}
+// QueryNetworkSettings queries the network_settings edge of a WorkerContainedInformation.
+func (c *WorkerContainedInformationClient) QueryNetworkSettings(wci *WorkerContainedInformation) *WorkerNetworkSettingsQuery {
+	query := &WorkerNetworkSettingsQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := co.ID
+		id := wci.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(component.Table, component.FieldID, id),
-			sqlgraph.To(picture.Table, picture.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, component.PicturesTable, component.PicturesColumn),
+			sqlgraph.From(workercontainedinformation.Table, workercontainedinformation.FieldID, id),
+			sqlgraph.To(workernetworksettings.Table, workernetworksettings.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, workercontainedinformation.NetworkSettingsTable, workercontainedinformation.NetworkSettingsColumn),
 		)
-		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(wci.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // Hooks returns the client hooks.
-func (c *ComponentClient) Hooks() []Hook {
-	return c.hooks.Component
+func (c *WorkerContainedInformationClient) Hooks() []Hook {
+	return c.hooks.WorkerContainedInformation
 }
 
-// PictureClient is a client for the Picture schema.
-type PictureClient struct {
+// WorkerNetworkSettingsClient is a client for the WorkerNetworkSettings schema.
+type WorkerNetworkSettingsClient struct {
 	config
 }
 
-// NewPictureClient returns a client for the Picture from the given config.
-func NewPictureClient(c config) *PictureClient {
-	return &PictureClient{config: c}
+// NewWorkerNetworkSettingsClient returns a client for the WorkerNetworkSettings from the given config.
+func NewWorkerNetworkSettingsClient(c config) *WorkerNetworkSettingsClient {
+	return &WorkerNetworkSettingsClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `picture.Hooks(f(g(h())))`.
-func (c *PictureClient) Use(hooks ...Hook) {
-	c.hooks.Picture = append(c.hooks.Picture, hooks...)
+// A call to `Use(f, g, h)` equals to `workernetworksettings.Hooks(f(g(h())))`.
+func (c *WorkerNetworkSettingsClient) Use(hooks ...Hook) {
+	c.hooks.WorkerNetworkSettings = append(c.hooks.WorkerNetworkSettings, hooks...)
 }
 
-// Create returns a builder for creating a Picture entity.
-func (c *PictureClient) Create() *PictureCreate {
-	mutation := newPictureMutation(c.config, OpCreate)
-	return &PictureCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a WorkerNetworkSettings entity.
+func (c *WorkerNetworkSettingsClient) Create() *WorkerNetworkSettingsCreate {
+	mutation := newWorkerNetworkSettingsMutation(c.config, OpCreate)
+	return &WorkerNetworkSettingsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Picture entities.
-func (c *PictureClient) CreateBulk(builders ...*PictureCreate) *PictureCreateBulk {
-	return &PictureCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of WorkerNetworkSettings entities.
+func (c *WorkerNetworkSettingsClient) CreateBulk(builders ...*WorkerNetworkSettingsCreate) *WorkerNetworkSettingsCreateBulk {
+	return &WorkerNetworkSettingsCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Picture.
-func (c *PictureClient) Update() *PictureUpdate {
-	mutation := newPictureMutation(c.config, OpUpdate)
-	return &PictureUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for WorkerNetworkSettings.
+func (c *WorkerNetworkSettingsClient) Update() *WorkerNetworkSettingsUpdate {
+	mutation := newWorkerNetworkSettingsMutation(c.config, OpUpdate)
+	return &WorkerNetworkSettingsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *PictureClient) UpdateOne(pi *Picture) *PictureUpdateOne {
-	mutation := newPictureMutation(c.config, OpUpdateOne, withPicture(pi))
-	return &PictureUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *WorkerNetworkSettingsClient) UpdateOne(wns *WorkerNetworkSettings) *WorkerNetworkSettingsUpdateOne {
+	mutation := newWorkerNetworkSettingsMutation(c.config, OpUpdateOne, withWorkerNetworkSettings(wns))
+	return &WorkerNetworkSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PictureClient) UpdateOneID(id int) *PictureUpdateOne {
-	mutation := newPictureMutation(c.config, OpUpdateOne, withPictureID(id))
-	return &PictureUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *WorkerNetworkSettingsClient) UpdateOneID(id int) *WorkerNetworkSettingsUpdateOne {
+	mutation := newWorkerNetworkSettingsMutation(c.config, OpUpdateOne, withWorkerNetworkSettingsID(id))
+	return &WorkerNetworkSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Picture.
-func (c *PictureClient) Delete() *PictureDelete {
-	mutation := newPictureMutation(c.config, OpDelete)
-	return &PictureDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for WorkerNetworkSettings.
+func (c *WorkerNetworkSettingsClient) Delete() *WorkerNetworkSettingsDelete {
+	mutation := newWorkerNetworkSettingsMutation(c.config, OpDelete)
+	return &WorkerNetworkSettingsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *PictureClient) DeleteOne(pi *Picture) *PictureDeleteOne {
-	return c.DeleteOneID(pi.ID)
+func (c *WorkerNetworkSettingsClient) DeleteOne(wns *WorkerNetworkSettings) *WorkerNetworkSettingsDeleteOne {
+	return c.DeleteOneID(wns.ID)
 }
 
 // DeleteOne returns a builder for deleting the given entity by its id.
-func (c *PictureClient) DeleteOneID(id int) *PictureDeleteOne {
-	builder := c.Delete().Where(picture.ID(id))
+func (c *WorkerNetworkSettingsClient) DeleteOneID(id int) *WorkerNetworkSettingsDeleteOne {
+	builder := c.Delete().Where(workernetworksettings.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &PictureDeleteOne{builder}
+	return &WorkerNetworkSettingsDeleteOne{builder}
 }
 
-// Query returns a query builder for Picture.
-func (c *PictureClient) Query() *PictureQuery {
-	return &PictureQuery{
+// Query returns a query builder for WorkerNetworkSettings.
+func (c *WorkerNetworkSettingsClient) Query() *WorkerNetworkSettingsQuery {
+	return &WorkerNetworkSettingsQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a Picture entity by its id.
-func (c *PictureClient) Get(ctx context.Context, id int) (*Picture, error) {
-	return c.Query().Where(picture.ID(id)).Only(ctx)
+// Get returns a WorkerNetworkSettings entity by its id.
+func (c *WorkerNetworkSettingsClient) Get(ctx context.Context, id int) (*WorkerNetworkSettings, error) {
+	return c.Query().Where(workernetworksettings.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PictureClient) GetX(ctx context.Context, id int) *Picture {
+func (c *WorkerNetworkSettingsClient) GetX(ctx context.Context, id int) *WorkerNetworkSettings {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -328,145 +321,23 @@ func (c *PictureClient) GetX(ctx context.Context, id int) *Picture {
 	return obj
 }
 
-// QueryUser queries the user edge of a Picture.
-func (c *PictureClient) QueryUser(pi *Picture) *UserQuery {
-	query := &UserQuery{config: c.config}
+// QueryWorkerContainedInformation queries the worker_contained_information edge of a WorkerNetworkSettings.
+func (c *WorkerNetworkSettingsClient) QueryWorkerContainedInformation(wns *WorkerNetworkSettings) *WorkerContainedInformationQuery {
+	query := &WorkerContainedInformationQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := pi.ID
+		id := wns.ID
 		step := sqlgraph.NewStep(
-			sqlgraph.From(picture.Table, picture.FieldID, id),
-			sqlgraph.To(user.Table, user.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, picture.UserTable, picture.UserColumn),
+			sqlgraph.From(workernetworksettings.Table, workernetworksettings.FieldID, id),
+			sqlgraph.To(workercontainedinformation.Table, workercontainedinformation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, workernetworksettings.WorkerContainedInformationTable, workernetworksettings.WorkerContainedInformationColumn),
 		)
-		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryComponent queries the component edge of a Picture.
-func (c *PictureClient) QueryComponent(pi *Picture) *ComponentQuery {
-	query := &ComponentQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := pi.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(picture.Table, picture.FieldID, id),
-			sqlgraph.To(component.Table, component.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, picture.ComponentTable, picture.ComponentColumn),
-		)
-		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(wns.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // Hooks returns the client hooks.
-func (c *PictureClient) Hooks() []Hook {
-	return c.hooks.Picture
-}
-
-// UserClient is a client for the User schema.
-type UserClient struct {
-	config
-}
-
-// NewUserClient returns a client for the User from the given config.
-func NewUserClient(c config) *UserClient {
-	return &UserClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `user.Hooks(f(g(h())))`.
-func (c *UserClient) Use(hooks ...Hook) {
-	c.hooks.User = append(c.hooks.User, hooks...)
-}
-
-// Create returns a builder for creating a User entity.
-func (c *UserClient) Create() *UserCreate {
-	mutation := newUserMutation(c.config, OpCreate)
-	return &UserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of User entities.
-func (c *UserClient) CreateBulk(builders ...*UserCreate) *UserCreateBulk {
-	return &UserCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for User.
-func (c *UserClient) Update() *UserUpdate {
-	mutation := newUserMutation(c.config, OpUpdate)
-	return &UserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
-	mutation := newUserMutation(c.config, OpUpdateOne, withUser(u))
-	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *UserClient) UpdateOneID(id int) *UserUpdateOne {
-	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
-	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for User.
-func (c *UserClient) Delete() *UserDelete {
-	mutation := newUserMutation(c.config, OpDelete)
-	return &UserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
-	return c.DeleteOneID(u.ID)
-}
-
-// DeleteOne returns a builder for deleting the given entity by its id.
-func (c *UserClient) DeleteOneID(id int) *UserDeleteOne {
-	builder := c.Delete().Where(user.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &UserDeleteOne{builder}
-}
-
-// Query returns a query builder for User.
-func (c *UserClient) Query() *UserQuery {
-	return &UserQuery{
-		config: c.config,
-	}
-}
-
-// Get returns a User entity by its id.
-func (c *UserClient) Get(ctx context.Context, id int) (*User, error) {
-	return c.Query().Where(user.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *UserClient) GetX(ctx context.Context, id int) *User {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryUserPicture queries the user_picture edge of a User.
-func (c *UserClient) QueryUserPicture(u *User) *PictureQuery {
-	query := &PictureQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(picture.Table, picture.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.UserPictureTable, user.UserPictureColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *UserClient) Hooks() []Hook {
-	return c.hooks.User
+func (c *WorkerNetworkSettingsClient) Hooks() []Hook {
+	return c.hooks.WorkerNetworkSettings
 }

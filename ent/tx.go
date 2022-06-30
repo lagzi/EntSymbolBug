@@ -12,12 +12,10 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
-	// Component is the client for interacting with the Component builders.
-	Component *ComponentClient
-	// Picture is the client for interacting with the Picture builders.
-	Picture *PictureClient
-	// User is the client for interacting with the User builders.
-	User *UserClient
+	// WorkerContainedInformation is the client for interacting with the WorkerContainedInformation builders.
+	WorkerContainedInformation *WorkerContainedInformationClient
+	// WorkerNetworkSettings is the client for interacting with the WorkerNetworkSettings builders.
+	WorkerNetworkSettings *WorkerNetworkSettingsClient
 
 	// lazily loaded.
 	client     *Client
@@ -153,9 +151,8 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
-	tx.Component = NewComponentClient(tx.config)
-	tx.Picture = NewPictureClient(tx.config)
-	tx.User = NewUserClient(tx.config)
+	tx.WorkerContainedInformation = NewWorkerContainedInformationClient(tx.config)
+	tx.WorkerNetworkSettings = NewWorkerNetworkSettingsClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -165,7 +162,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Component.QueryXXX(), the query will be executed
+// applies a query, for example: WorkerContainedInformation.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

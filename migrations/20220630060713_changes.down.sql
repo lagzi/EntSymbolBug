@@ -1,0 +1,2 @@
+-- reverse: create index "worker_network_settings_worker_contained_information_network_settings_key" to table: "worker_network_settings"
+DROP INDEX "worker_network_settings_worker_contained_information_network_settings_key";

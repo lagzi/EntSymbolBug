@@ -5,6 +5,6 @@ package runtime
 // The schema-stitching logic is generated in github.com/lagzi/EntSymbolBug/ent/runtime.go
 
 const (
-	Version = "v0.10.2-0.20220620053230-311d76067960"           // Version of ent codegen.
-	Sum     = "h1:LmGtK0ahsk+Uh1uArTPiZIra4odGGCZyGmicEIf2dkQ=" // Sum of ent codegen.
+	Version = "v0.10.2-0.20220629115610-f1662d9197e7"           // Version of ent codegen.
+	Sum     = "h1:mkbGXK2WDdz3Yadt3yXbCJFCwzGI9kq+mr4lws1YZgo=" // Sum of ent codegen.
 )

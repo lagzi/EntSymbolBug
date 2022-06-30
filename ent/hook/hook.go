@@ -9,41 +9,28 @@ import (
 	"github.com/lagzi/EntSymbolBug/ent"
 )
 
-// The ComponentFunc type is an adapter to allow the use of ordinary
-// function as Component mutator.
-type ComponentFunc func(context.Context, *ent.ComponentMutation) (ent.Value, error)
+// The WorkerContainedInformationFunc type is an adapter to allow the use of ordinary
+// function as WorkerContainedInformation mutator.
+type WorkerContainedInformationFunc func(context.Context, *ent.WorkerContainedInformationMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ComponentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.ComponentMutation)
+func (f WorkerContainedInformationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.WorkerContainedInformationMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ComponentMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WorkerContainedInformationMutation", m)
 	}
 	return f(ctx, mv)
 }
 
-// The PictureFunc type is an adapter to allow the use of ordinary
-// function as Picture mutator.
-type PictureFunc func(context.Context, *ent.PictureMutation) (ent.Value, error)
+// The WorkerNetworkSettingsFunc type is an adapter to allow the use of ordinary
+// function as WorkerNetworkSettings mutator.
+type WorkerNetworkSettingsFunc func(context.Context, *ent.WorkerNetworkSettingsMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PictureFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.PictureMutation)
+func (f WorkerNetworkSettingsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.WorkerNetworkSettingsMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PictureMutation", m)
-	}
-	return f(ctx, mv)
-}
-
-// The UserFunc type is an adapter to allow the use of ordinary
-// function as User mutator.
-type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.UserMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WorkerNetworkSettingsMutation", m)
 	}
 	return f(ctx, mv)
 }

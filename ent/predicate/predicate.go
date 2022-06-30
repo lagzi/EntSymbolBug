@@ -6,11 +6,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Component is the predicate function for component builders.
-type Component func(*sql.Selector)
+// WorkerContainedInformation is the predicate function for workercontainedinformation builders.
+type WorkerContainedInformation func(*sql.Selector)
 
-// Picture is the predicate function for picture builders.
-type Picture func(*sql.Selector)
-
-// User is the predicate function for user builders.
-type User func(*sql.Selector)
+// WorkerNetworkSettings is the predicate function for workernetworksettings builders.
+type WorkerNetworkSettings func(*sql.Selector)
